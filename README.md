@@ -1,0 +1,1 @@
+a server manages chat record developed by C++
