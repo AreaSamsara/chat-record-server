@@ -23,6 +23,7 @@ pkg_check_modules(MYSQL REQUIRED mysqlclient)
 
 # 引入FetchContent模块
 include(FetchContent)
+
 FetchContent_Declare(
     jsoncpp
     # GIT_REPOSITORY https://github.com/open-source-parsers/jsoncpp.git
@@ -35,19 +36,29 @@ FetchContent_Declare(
     GIT_TAG        10.2.1
 )
 FetchContent_Declare(
-    sqlite_orm
-    GIT_REPOSITORY https://github.com/fnc12/sqlite_orm.git
-    GIT_TAG        v1.8.2
+  cpp-httplib
+  GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+  GIT_TAG        v0.14.0
 )
+# FetchContent_Declare(
+#     sqlite_orm
+#     GIT_REPOSITORY https://github.com/fnc12/sqlite_orm.git
+#     GIT_TAG        v1.8.2
+# )
+
 FetchContent_MakeAvailable(
     jsoncpp 
     fmt 
-    sqlite_orm 
+    cpp-httplib
+    # sqlite_orm
 )
 
-# 收集源文件
-aux_source_directory (src SRC_LIST)
-add_executable (main ${SRC_LIST})
+# 先创建目标，再动态添加源文件
+add_executable(main src/main.cpp)
+target_sources(main PRIVATE 
+    src/server/server.cpp
+    src/server/api.cpp
+)
 
 # 指定编译器在搜索头文件时，应包含项目中的include目录
 target_include_directories(main PRIVATE include)
@@ -64,5 +75,6 @@ target_link_libraries(main PRIVATE
     Boost::system
     Boost::filesystem
     ${MYSQL_LIBRARIES}
-    sqlite_orm
+    httplib::httplib
+    # sqlite_orm
 )

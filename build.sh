@@ -1,3 +1,8 @@
+# 检查是否有 -f 参数，如果有则删除 build 文件夹
+if [ "$1" = "-f" ]; then
+    rm -rf build
+fi
+
 # 检查 build 文件夹是否存在，如果不存在则创建
 if [ ! -d "build" ]; then
     mkdir build
