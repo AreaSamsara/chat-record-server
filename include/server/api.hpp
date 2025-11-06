@@ -1,9 +1,12 @@
 #pragma once
 
 #include <iostream>
+#include <map>
+
 #include <format>
 #include <httplib.h>
-#include <map>
+
+#include "log/log.hpp"
 
 namespace AreaSamsara::server
 {

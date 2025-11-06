@@ -5,18 +5,18 @@ namespace AreaSamsara::server
     void hello_handler(const httplib::Request &req, httplib::Response &rsp)
     {
         auto name = req.get_param_value("name");
-        std::cout << "receive get request, name=" << name << std::endl;
-        std::string response_content = std::format("Hello, {}", name);
+        spdlog::info("GET /Hello -> name: {}", name);
 
+        std::string response_content = std::format("Hello, {}", name);
         rsp.set_content(response_content, "text/plain");
     }
 
     void echo_handler(const httplib::Request &req, httplib::Response &rsp)
     {
-        std::cout << "receive post data: " << req.body << std::endl;
+        spdlog::info("POST /Echo -> receive post data: {}", req.body);
+
         std::string response_content =
             "{\"status\": \"success\", \"message\": \"Data received: " + req.body + "\"}";
-
         rsp.set_content(response_content, "application/json");
     }
 

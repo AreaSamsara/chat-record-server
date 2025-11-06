@@ -1,5 +1,6 @@
 #include "server/server.hpp"
 #include "server/api.hpp"
+#include "log/log.hpp"
 
 namespace AreaSamsara::server
 {
@@ -23,7 +24,15 @@ namespace AreaSamsara::server
             server.Post(name, handler);
         }
 
-        std::cout << "server start running..." << std::endl;
-        server.listen("0.0.0.0", 8080);
+        const std::string ip_addr = "0.0.0.0";
+        const int port = 8080;
+
+        // 监听端口
+        if (!server.listen(ip_addr, port))
+        {
+            throw std::runtime_error(std::format("fail to listen at {}:{}", ip_addr, port));
+        }
+
+        spdlog::info("Server listens at {}:{}", ip_addr, port);
     }
 }

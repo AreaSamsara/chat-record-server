@@ -15,7 +15,15 @@ int main()
     log::init_logger(log_filename);
 
     // 启动服务器
-    server::run_server();
+    try
+    {
+        server::run_server();
+    }
+    catch (const std::exception &e)
+    {
+        spdlog::error("Fail to start server: {}", e.what());
+        return 1;
+    }
 
     return 0;
 }
