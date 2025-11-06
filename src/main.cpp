@@ -1,27 +1,21 @@
 #include <string>
-#include <spdlog/spdlog.h>
+
 #include "server/server.hpp"
-
-// 初始化日志管理器
-void init_logger()
-{
-    // 设置日志等级
-    spdlog::set_level(spdlog::level::debug);
-    // 设置日志格式
-    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v");
-
-    spdlog::info("Logger initialized as level {}",
-                 spdlog::level::to_string_view(spdlog::get_level()));
-}
+#include "log/log.hpp"
 
 int main()
 {
+    using namespace AreaSamsara;
+
     std::string name = "AS";
     std::cout << std::format("Hello, {}!", name) << std::endl;
 
-    init_logger();
+    // 初始化日志管理器
+    const std::string log_filename = "./bin/log.txt";
+    log::init_logger(log_filename);
 
-    AreaSamsara::server::run_server();
+    // 启动服务器
+    server::run_server();
 
     return 0;
 }

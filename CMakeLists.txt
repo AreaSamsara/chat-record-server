@@ -66,6 +66,7 @@ add_executable(main src/main.cpp)
 target_sources(main PRIVATE 
     src/server/server.cpp
     src/server/api.cpp
+    src/log/log.cpp
 )
 
 # 指定编译器在搜索头文件时，应包含项目中的include目录
