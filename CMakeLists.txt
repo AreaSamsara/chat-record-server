@@ -37,8 +37,15 @@ FetchContent_Declare(
 )
 FetchContent_Declare(
   cpp-httplib
-  GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+  # GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+  GIT_REPOSITORY https://gitee.com/YeLee_CN/cpp-httplib.git
   GIT_TAG        v0.14.0
+)
+FetchContent_Declare(
+    spdlog
+    # GIT_REPOSITORY https://github.com/gabime/spdlog.git
+    GIT_REPOSITORY https://gitee.com/mirror-luyi/spdlog.git
+    GIT_TAG        v1.14.1
 )
 # FetchContent_Declare(
 #     sqlite_orm
@@ -50,6 +57,7 @@ FetchContent_MakeAvailable(
     jsoncpp 
     fmt 
     cpp-httplib
+    spdlog
     # sqlite_orm
 )
 
@@ -70,11 +78,13 @@ target_include_directories(main PRIVATE
 
 # 将可执行文件main与库进行链接，PRIVATE表示该库仅用于构建main本身
 target_link_libraries(main PRIVATE 
-    jsoncpp_lib
-    fmt::fmt
     Boost::system
     Boost::filesystem
     ${MYSQL_LIBRARIES}
+
+    jsoncpp_lib
+    fmt::fmt
     httplib::httplib
+    spdlog::spdlog
     # sqlite_orm
 )
