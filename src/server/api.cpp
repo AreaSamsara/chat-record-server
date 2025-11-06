@@ -15,9 +15,12 @@ namespace AreaSamsara::server
     {
         spdlog::info("POST /Echo -> receive post data: {}", req.body);
 
-        std::string response_content =
-            "{\"status\": \"success\", \"message\": \"Data received: " + req.body + "\"}";
-        rsp.set_content(response_content, "application/json");
+        Json::Value response_data;
+        response_data["status"] = "success";
+        response_data["message"] = std::format("Data received: {}", req.body);
+
+        Json::StreamWriterBuilder writer;
+        rsp.set_content(Json::writeString(writer, response_data), "application/json");
     }
 
     std::map<std::string, HttpHandler> get_handlers = {

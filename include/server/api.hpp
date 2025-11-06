@@ -5,6 +5,7 @@
 
 #include <format>
 #include <httplib.h>
+#include <json/json.h>
 
 #include "log/log.hpp"
 
