@@ -27,12 +27,12 @@ namespace AreaSamsara::server
         const std::string ip_addr = "0.0.0.0";
         const int port = 8080;
 
+        spdlog::info("Server listens at {}:{}", ip_addr, port);
+
         // 监听端口
         if (!server.listen(ip_addr, port))
         {
             throw std::runtime_error(std::format("fail to listen at {}:{}", ip_addr, port));
         }
-
-        spdlog::info("Server listens at {}:{}", ip_addr, port);
     }
 }

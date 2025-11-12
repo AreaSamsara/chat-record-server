@@ -47,18 +47,20 @@ FetchContent_Declare(
     GIT_REPOSITORY https://gitee.com/mirror-luyi/spdlog.git
     GIT_TAG        v1.14.1
 )
-# FetchContent_Declare(
-#     sqlite_orm
-#     GIT_REPOSITORY https://github.com/fnc12/sqlite_orm.git
-#     GIT_TAG        v1.8.2
-# )
+FetchContent_Declare(
+  soci
+  # GIT_REPOSITORY https://github.com/SOCI/soci.git
+  GIT_REPOSITORY https://gitee.com/mirrors_SOCI/soci
+  GIT_TAG master
+  CMAKE_ARGS -DWITH_MYSQL=ON
+)
 
 FetchContent_MakeAvailable(
     jsoncpp 
     fmt 
     cpp-httplib
     spdlog
-    # sqlite_orm
+    soci
 )
 
 # 先创建目标，再动态添加源文件
@@ -67,6 +69,7 @@ target_sources(main PRIVATE
     src/server/server.cpp
     src/server/api.cpp
     src/log/log.cpp
+    src/database/database.cpp
 )
 
 # 指定编译器在搜索头文件时，应包含项目中的include目录
@@ -87,5 +90,6 @@ target_link_libraries(main PRIVATE
     fmt::fmt
     httplib::httplib
     spdlog::spdlog
-    # sqlite_orm
+    soci_core
+    soci_mysql
 )

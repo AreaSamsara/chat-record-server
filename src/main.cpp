@@ -2,17 +2,25 @@
 
 #include "server/server.hpp"
 #include "log/log.hpp"
+#include "database/database.hpp"
 
 int main()
 {
     using namespace AreaSamsara;
 
-    std::string name = "AS";
-    std::cout << std::format("Hello, {}!", name) << std::endl;
-
     // 初始化日志管理器
     const std::string log_filename = "./bin/log.txt";
     log::init_logger(log_filename);
+
+    try
+    {
+        // database::test_soci();
+    }
+    catch (const std::exception &e)
+    {
+        spdlog::error("Error database::test_soci(): {}", e.what());
+        return 1;
+    }
 
     // 启动服务器
     try
@@ -21,7 +29,7 @@ int main()
     }
     catch (const std::exception &e)
     {
-        spdlog::error("Fail to start server: {}", e.what());
+        spdlog::error("Error server::run_server(): {}", e.what());
         return 1;
     }
 
