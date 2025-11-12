@@ -1,5 +1,9 @@
 #include <string>
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 #include "server/server.hpp"
 #include "log/log.hpp"
 #include "database/database.hpp"
@@ -14,7 +18,8 @@ int main()
 
     try
     {
-        // database::test_soci();
+        // database::test_soci_insert();
+        database::test_soci_select();
     }
     catch (const std::exception &e)
     {

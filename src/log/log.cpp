@@ -1,5 +1,9 @@
 #include "log/log.hpp"
 
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 namespace AreaSamsara::log
 {
     void init_logger(const std::string &log_filename)

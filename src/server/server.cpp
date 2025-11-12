@@ -1,6 +1,14 @@
 #include "server/server.hpp"
+
+#include <iostream>
+#include <format>
+
+#include <httplib.h>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 #include "server/api.hpp"
-#include "log/log.hpp"
 
 namespace AreaSamsara::server
 {

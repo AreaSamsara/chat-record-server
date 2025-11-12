@@ -1,5 +1,12 @@
 #include "server/api.hpp"
 
+#include <format>
+#include <json/json.h>
+
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 namespace AreaSamsara::server
 {
     void hello_handler(const httplib::Request &req, httplib::Response &rsp)
@@ -20,6 +27,7 @@ namespace AreaSamsara::server
         response_data["message"] = std::format("Data received: {}", req.body);
 
         Json::StreamWriterBuilder writer;
+        writer.settings_["emitUTF8"] = true;
         rsp.set_content(Json::writeString(writer, response_data), "application/json");
     }
 

@@ -3,11 +3,7 @@
 #include <iostream>
 #include <map>
 
-#include <format>
 #include <httplib.h>
-#include <json/json.h>
-
-#include "log/log.hpp"
 
 namespace AreaSamsara::server
 {

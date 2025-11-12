@@ -70,6 +70,7 @@ target_sources(main PRIVATE
     src/server/api.cpp
     src/log/log.cpp
     src/database/database.cpp
+    src/database/servant_info.cpp
 )
 
 # 指定编译器在搜索头文件时，应包含项目中的include目录
