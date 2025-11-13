@@ -25,6 +25,7 @@ namespace AreaSamsara::database
         static std::vector<ServantInfo> select(soci::session &sql, const std::string &where_condition = "");
 
     public:
+        uint32_t id() const { return id_; }
         std::string servant_name() const { return servant_name_; }
         std::string servant_class() const { return servant_class_; }
         std::string servant_gender() const { return servant_gender_; }
@@ -32,6 +33,7 @@ namespace AreaSamsara::database
         Json::Value to_json() const
         {
             Json::Value json_data;
+            json_data["id"] = id_;
             json_data["servant_name"] = servant_name_;
             json_data["servant_class"] = servant_class_;
             json_data["servant_gender"] = servant_gender_;
@@ -39,6 +41,7 @@ namespace AreaSamsara::database
         }
 
     private:
+        uint32_t id_ = 0;
         std::string servant_name_;
         std::string servant_class_;
         std::string servant_gender_;

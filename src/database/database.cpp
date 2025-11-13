@@ -31,7 +31,7 @@ namespace AreaSamsara::database
             soci::session sql(soci::mysql, std::format("host={} user={} password='{}' db={}", host, user, pwd, db_name));
 
             // 执行插入操作
-            ServantInfo servant_info("美狄亚", "Caster", "女");
+            ServantInfo servant_info("卫宫士郎", "Archer", "男");
             ServantInfo::insert(sql, servant_info);
 
             spdlog::info("Data inserted successfully");
