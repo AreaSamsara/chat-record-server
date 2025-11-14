@@ -25,21 +25,15 @@ pkg_check_modules(MYSQL REQUIRED mysqlclient)
 include(FetchContent)
 
 FetchContent_Declare(
-    jsoncpp
-    # GIT_REPOSITORY https://github.com/open-source-parsers/jsoncpp.git
-    GIT_REPOSITORY https://gitee.com/chooosky/jsoncpp
-    GIT_TAG        1.9.5
-)
-FetchContent_Declare(
     fmt
     GIT_REPOSITORY https://gitee.com/mirrors/fmt.git
     GIT_TAG        10.2.1
 )
 FetchContent_Declare(
-  cpp-httplib
-  # GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
-  GIT_REPOSITORY https://gitee.com/YeLee_CN/cpp-httplib.git
-  GIT_TAG        v0.14.0
+    cpp-httplib
+    # GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+    GIT_REPOSITORY https://gitee.com/YeLee_CN/cpp-httplib.git
+    GIT_TAG        v0.14.0
 )
 FetchContent_Declare(
     spdlog
@@ -48,11 +42,11 @@ FetchContent_Declare(
     GIT_TAG        v1.14.1
 )
 FetchContent_Declare(
-  soci
-  # GIT_REPOSITORY https://github.com/SOCI/soci.git
-  GIT_REPOSITORY https://gitee.com/mirrors_SOCI/soci
-  GIT_TAG master
-  CMAKE_ARGS -DWITH_MYSQL=ON
+    soci
+    # GIT_REPOSITORY https://github.com/SOCI/soci.git
+    GIT_REPOSITORY https://gitee.com/mirrors_SOCI/soci
+    GIT_TAG master
+    CMAKE_ARGS -DWITH_MYSQL=ON
 )
 FetchContent_Declare(
     nlohmann_json
@@ -61,7 +55,6 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(
-    jsoncpp 
     fmt 
     cpp-httplib
     spdlog
@@ -94,7 +87,6 @@ target_link_libraries(main PRIVATE
     Boost::filesystem
     ${MYSQL_LIBRARIES}
 
-    jsoncpp_lib
     fmt::fmt
     httplib::httplib
     spdlog::spdlog

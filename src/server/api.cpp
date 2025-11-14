@@ -1,7 +1,6 @@
 #include "server/api.hpp"
 
 #include <format>
-#include <json/json.h>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -29,13 +28,7 @@ namespace AreaSamsara::server
     {
         spdlog::info("POST /Echo -> receive post data: {}", req.body);
 
-        Json::Value response_json;
-        response_json["status"] = "success";
-        response_json["message"] = std::format("Data received: {}", req.body);
-
-        Json::StreamWriterBuilder writer;
-        writer.settings_["emitUTF8"] = true;
-        rsp.set_content(Json::writeString(writer, response_json), "application/json");
+        rsp.set_content("{}", "application/json");
     }
 
     // POST SignUp

@@ -4,7 +4,6 @@
 #include <vector>
 #include <chrono>
 
-#include <json/json.h>
 #include <soci/soci.h>
 #include <soci/mysql/soci-mysql.h>
 #include <nlohmann/json.hpp>
@@ -74,12 +73,10 @@ namespace AreaSamsara::database
 
         static UserInfo from_json(const nlohmann::ordered_json &jsondata)
         {
-            UserInfo user_info(
-                jsondata.value("user_name", ""),
-                jsondata.value("email", ""),
-                jsondata.value("phone", ""),
-                jsondata.value("password_hash", ""));
-            return user_info;
+            return UserInfo(jsondata.value("user_name", ""),
+                            jsondata.value("email", ""),
+                            jsondata.value("phone", ""),
+                            jsondata.value("password_hash", ""));
         }
     };
 }

@@ -3,9 +3,9 @@
 #include <iostream>
 #include <vector>
 
-#include <json/json.h>
 #include <soci/soci.h>
 #include <soci/mysql/soci-mysql.h>
+#include <nlohmann/json.hpp>
 
 namespace AreaSamsara::database
 {
@@ -13,8 +13,10 @@ namespace AreaSamsara::database
     class ServantInfo
     {
     public:
-        ServantInfo(const std::string &servant_name, const std::string &servant_class, const std::string &servant_gender)
-            : servant_name_(servant_name), servant_class_(servant_class), servant_gender_(servant_gender)
+        ServantInfo(const std::string &servant_name, const std::string &servant_class,
+                    const std::string &servant_gender)
+            : servant_name_(servant_name), servant_class_(servant_class),
+              servant_gender_(servant_gender)
         {
         }
 
@@ -45,14 +47,19 @@ namespace AreaSamsara::database
         // 从者性别
         std::string servant_gender() const { return servant_gender_; }
 
-        Json::Value to_json() const
+        nlohmann::ordered_json to_json() const
         {
-            Json::Value json_data;
-            json_data["id"] = id_;
-            json_data["servant_name"] = servant_name_;
-            json_data["servant_class"] = servant_class_;
-            json_data["servant_gender"] = servant_gender_;
-            return json_data;
+            return {{"id", id_},
+                    {"servant_name", servant_name_},
+                    {"servant_class", servant_class_},
+                    {"servant_gender", servant_gender_}};
+        }
+
+        static ServantInfo from_json(const nlohmann::ordered_json &jsondata)
+        {
+            return ServantInfo(jsondata.value("servant_name", ""),
+                               jsondata.value("servant_class", ""),
+                               jsondata.value("servant_gender", ""));
         }
     };
 }

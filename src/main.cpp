@@ -19,7 +19,7 @@ int main()
     try
     {
         // database::test_soci_insert();
-        // database::test_soci_select();
+        database::test_soci_select();
     }
     catch (const std::exception &e)
     {

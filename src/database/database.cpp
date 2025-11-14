@@ -8,7 +8,6 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <json/json.h>
 
 #include "database/servant_info.hpp"
 
@@ -50,16 +49,12 @@ namespace AreaSamsara::database
             // 执行查询操作
             std::vector<ServantInfo> servants = ServantInfo::select(sql, "servant_class like '%er'");
 
-            // 进行序列化
-            Json::Value servant_datas(Json::arrayValue);
-            for (auto &servant : servants)
+            nlohmann::ordered_json jsondata = nlohmann::ordered_json::array();
+            for (const auto &servant : servants)
             {
-                servant_datas.append(servant.to_json());
+                jsondata.push_back(servant.to_json());
             }
-
-            Json::StreamWriterBuilder writer;
-            writer.settings_["emitUTF8"] = true;
-            spdlog::info(Json::writeString(writer, servant_datas));
+            spdlog::info(jsondata.dump(-1, ' ', false));
         }
         catch (const std::exception &e)
         {
