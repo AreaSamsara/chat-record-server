@@ -15,20 +15,18 @@
 namespace AreaSamsara::database
 {
     // 用户名
-    const std::string user = "root";
+    const static std::string user = "root";
     // 密码
-    const std::string pwd = "A1351989001";
+    const static std::string pwd = "A1351989001";
     // 主机
-    const std::string host = "localhost";
-    // 数据库名称
-    const std::string db_name = "db_test";
+    const static std::string host = "localhost";
 
     void test_soci_insert()
     {
         try
         {
             // 创建MySQL会话
-            soci::session sql(soci::mysql, std::format("host={} user={} password='{}' db={}", host, user, pwd, db_name));
+            soci::session sql(soci::mysql, std::format("host={} user={} password='{}' db={}", host, user, pwd, ServantInfo::db_name));
 
             // 执行插入操作
             ServantInfo servant_info("卫宫士郎", "Archer", "男");
@@ -47,7 +45,7 @@ namespace AreaSamsara::database
         try
         {
             // 创建MySQL会话
-            soci::session sql(soci::mysql, std::format("host={} user={} password='{}' db={}", host, user, pwd, db_name));
+            soci::session sql(soci::mysql, std::format("host={} user={} password='{}' db={}", host, user, pwd, ServantInfo::db_name));
 
             // 执行查询操作
             std::vector<ServantInfo> servants = ServantInfo::select(sql, "servant_class like '%er'");

@@ -25,9 +25,13 @@ namespace AreaSamsara::database
         static std::vector<ServantInfo> select(soci::session &sql, const std::string &where_condition = "");
 
     public:
+        // 自增ID
         uint32_t id() const { return id_; }
+        // 从者名称
         std::string servant_name() const { return servant_name_; }
+        // 从者职阶
         std::string servant_class() const { return servant_class_; }
+        // 从者性别
         std::string servant_gender() const { return servant_gender_; }
 
         Json::Value to_json() const
@@ -40,14 +44,16 @@ namespace AreaSamsara::database
             return json_data;
         }
 
-    private:
-        uint32_t id_ = 0;
-        std::string servant_name_;
-        std::string servant_class_;
-        std::string servant_gender_;
+    public:
+        // 数据库名称
+        const static inline std::string db_name = "db_test";
+        // 数据表名称
+        const static inline std::string table_name = "tb_test";
 
     private:
-        // 表名
-        static inline std::string table_name = "tb_test";
+        uint32_t id_ = 0;            // 自增ID
+        std::string servant_name_;   // 从者名称
+        std::string servant_class_;  // 从者职阶
+        std::string servant_gender_; // 从者性别
     };
 }
