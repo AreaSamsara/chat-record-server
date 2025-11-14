@@ -7,6 +7,7 @@
 #include <json/json.h>
 #include <soci/soci.h>
 #include <soci/mysql/soci-mysql.h>
+#include <nlohmann/json.hpp>
 
 namespace AreaSamsara::database
 {
@@ -29,33 +30,56 @@ namespace AreaSamsara::database
         static std::vector<UserInfo> select(soci::session &sql, const std::string &where_condition = "");
 
     public:
-        Json::Value to_json() const
-        {
-            Json::Value json_data;
-            json_data["id"] = id_;
-            json_data["user_name"] = user_name_;
-            json_data["email"] = email_;
-            json_data["phone"] = phone_;
-            json_data["password_hash"] = password_hash_;
-            json_data["created_at"] = std::format("{:%Y-%m-%d %H:%M:%S}", created_at_);
-            json_data["updated_at"] = std::format("{:%Y-%m-%d %H:%M:%S}", updated_at_);
-
-            return json_data;
-        }
-
-    public:
         // 数据库名称
         const static inline std::string db_name = "db_ai_chat_info";
         // 数据表名称
         const static inline std::string table_name = "tb_user_info";
 
     private:
-        uint64_t id_ = 0; // 自增ID
-        std::string user_name_;
-        std::string email_;
-        std::string phone_;
-        std::string password_hash_;
-        std::chrono::system_clock::time_point created_at_;
-        std::chrono::system_clock::time_point updated_at_;
+        uint64_t id_ = 0;                                  // 自增ID
+        std::string user_name_;                            // 用户名称
+        std::string email_;                                // 邮件地址
+        std::string phone_;                                // 电话号码
+        std::string password_hash_;                        // 密码哈希值
+        std::chrono::system_clock::time_point created_at_; // 创建时间
+        std::chrono::system_clock::time_point updated_at_; // 更新时间
+
+    public:
+        // 自增ID
+        uint64_t id() const { return id_; }
+        // 用户名称
+        std::string user_name() const { return user_name_; }
+        // 邮件地址
+        std::string email() const { return email_; }
+        // 电话号码
+        std::string phone() const { return phone_; }
+        // 密码哈希值
+        std::string password_hash() const { return password_hash_; }
+        // 创建时间
+        std::chrono::system_clock::time_point created_at() const { return created_at_; }
+        // 更新时间
+        std::chrono::system_clock::time_point updated_at() const { return updated_at_; }
+
+        nlohmann::ordered_json to_json() const
+        {
+            return {
+                {"id", id_},
+                {"user_name", user_name_},
+                {"email", email_},
+                {"phone", phone_},
+                {"password_hash", password_hash_},
+                {"created_at", std::format("{:%Y-%m-%d %H:%M:%S}", created_at_)},
+                {"updated_at", std::format("{:%Y-%m-%d %H:%M:%S}", updated_at_)}};
+        }
+
+        static UserInfo from_json(const nlohmann::ordered_json &jsondata)
+        {
+            UserInfo user_info(
+                jsondata.value("user_name", ""),
+                jsondata.value("email", ""),
+                jsondata.value("phone", ""),
+                jsondata.value("password_hash", ""));
+            return user_info;
+        }
     };
 }

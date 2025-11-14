@@ -54,6 +54,11 @@ FetchContent_Declare(
   GIT_TAG master
   CMAKE_ARGS -DWITH_MYSQL=ON
 )
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://gitee.com/mirrors/nlohmann-json.git
+    GIT_TAG        v3.11.3
+)
 
 FetchContent_MakeAvailable(
     jsoncpp 
@@ -61,6 +66,7 @@ FetchContent_MakeAvailable(
     cpp-httplib
     spdlog
     soci
+    nlohmann_json
 )
 
 # 先创建目标，再动态添加源文件
@@ -94,4 +100,5 @@ target_link_libraries(main PRIVATE
     spdlog::spdlog
     soci_core
     soci_mysql
+    nlohmann_json
 )
