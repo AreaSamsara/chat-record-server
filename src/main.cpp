@@ -7,14 +7,21 @@
 #include "server/server.hpp"
 #include "log/log.hpp"
 #include "database/database.hpp"
+#include "config/config.hpp"
 
 int main()
 {
     using namespace AreaSamsara;
 
-    // 初始化日志管理器
-    const std::string log_filename = "./bin/log.txt";
-    log::init_logger(log_filename);
+    try
+    {
+        log::init_logger(config::Config::global_config().logger.file);
+    }
+    catch (const std::exception &e)
+    {
+        spdlog::error("Error log::init_logger(): {}", e.what());
+        return 1;
+    }
 
     try
     {

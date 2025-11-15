@@ -53,6 +53,11 @@ FetchContent_Declare(
     GIT_REPOSITORY https://gitee.com/mirrors/nlohmann-json.git
     GIT_TAG        v3.11.3
 )
+FetchContent_Declare(
+    yaml-cpp
+    GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+    GIT_TAG        yaml-cpp-0.7.0
+)
 
 FetchContent_MakeAvailable(
     fmt 
@@ -60,6 +65,7 @@ FetchContent_MakeAvailable(
     spdlog
     soci
     nlohmann_json
+    yaml-cpp
 )
 
 # 先创建目标，再动态添加源文件
@@ -71,6 +77,7 @@ target_sources(main PRIVATE
     src/database/database.cpp
     src/database/servant_info.cpp
     src/database/user_info.cpp
+    src/config/config.cpp
 )
 
 # 指定编译器在搜索头文件时，应包含项目中的include目录
@@ -93,4 +100,5 @@ target_link_libraries(main PRIVATE
     soci_core
     soci_mysql
     nlohmann_json
+    yaml-cpp
 )

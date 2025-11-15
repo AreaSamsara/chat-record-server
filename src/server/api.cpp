@@ -20,8 +20,30 @@ namespace AreaSamsara::server
         rsp.set_content(response_content, "text/plain");
     }
 
+    // GET UserList
+    void user_list_handler(const httplib::Request &req, httplib::Response &rsp)
+    {
+        spdlog::info("GET /UserList");
+
+        // try
+        // {
+        //     database::UserInfo::select();
+        //     database::UserInfo user_info = database::UserInfo::from_json(nlohmann::ordered_json::parse(req.body));
+        //     nlohmann::ordered_json response_json = user_info.to_json();
+        //     rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
+        // }
+        // catch (const std::exception &e)
+        // {
+        //     spdlog::error("error from_json(): {}", e.what());
+        //     return;
+        // }
+
+        // spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+    }
+
     std::map<std::string, HttpHandler> get_handlers = {
-        {"/Hello", hello_handler}};
+        {"/Hello", hello_handler},
+        {"/UserList", user_list_handler}};
 
     // POST Echo
     void echo_handler(const httplib::Request &req, httplib::Response &rsp)

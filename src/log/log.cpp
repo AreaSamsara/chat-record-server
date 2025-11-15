@@ -20,8 +20,10 @@ namespace AreaSamsara::log
         auto logger = std::make_shared<spdlog::logger>(
             "default_logger",
             spdlog::sinks_init_list{console_sink, file_sink});
+
         // 设置日志等级
         logger->set_level(spdlog::level::info);
+
         // 设置刷新策略
         logger->flush_on(spdlog::level::warn);        // 遇到警告时立即刷新
         spdlog::flush_every(std::chrono::seconds(3)); // 每3s刷新一次

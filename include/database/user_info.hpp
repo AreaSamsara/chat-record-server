@@ -30,9 +30,9 @@ namespace AreaSamsara::database
 
     public:
         // 数据库名称
-        const static inline std::string db_name = "db_ai_chat_info";
+        static inline const std::string db_name = "db_ai_chat_info";
         // 数据表名称
-        const static inline std::string table_name = "tb_user_info";
+        static inline const std::string table_name = "tb_user_info";
 
     private:
         uint64_t id_ = 0;                                  // 自增ID
