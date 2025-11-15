@@ -14,6 +14,7 @@ namespace AreaSamsara::database
     class UserInfo
     {
     public:
+        UserInfo() {}
         UserInfo(const std::string &user_name, const std::string &email, const std::string &phone, const std::string &password_hash,
                  const std::chrono::system_clock::time_point &created_at = std::chrono::system_clock::now(),
                  const std::chrono::system_clock::time_point &updated_at = std::chrono::system_clock::now())
@@ -27,6 +28,8 @@ namespace AreaSamsara::database
         static void insert(soci::session &sql, const UserInfo &user_info);
         // 查找数据
         static std::vector<UserInfo> select(soci::session &sql, const std::string &where_condition = "");
+        // 验证数据是否存在
+        static bool exists(soci::session &sql, const std::string &where_condition = "");
 
     public:
         // 数据库名称
@@ -47,17 +50,17 @@ namespace AreaSamsara::database
         // 自增ID
         uint64_t id() const { return id_; }
         // 用户名称
-        std::string user_name() const { return user_name_; }
+        std::string user_name() const noexcept { return user_name_; }
         // 邮件地址
-        std::string email() const { return email_; }
+        std::string email() const noexcept { return email_; }
         // 电话号码
-        std::string phone() const { return phone_; }
+        std::string phone() const noexcept { return phone_; }
         // 密码哈希值
-        std::string password_hash() const { return password_hash_; }
+        std::string password_hash() const noexcept { return password_hash_; }
         // 创建时间
-        std::chrono::system_clock::time_point created_at() const { return created_at_; }
+        std::chrono::system_clock::time_point created_at() const noexcept { return created_at_; }
         // 更新时间
-        std::chrono::system_clock::time_point updated_at() const { return updated_at_; }
+        std::chrono::system_clock::time_point updated_at() const noexcept { return updated_at_; }
 
         nlohmann::ordered_json to_json() const
         {

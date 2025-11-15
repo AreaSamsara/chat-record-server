@@ -41,11 +41,11 @@ namespace AreaSamsara::database
         // 自增ID
         uint32_t id() const { return id_; }
         // 从者名称
-        std::string servant_name() const { return servant_name_; }
+        std::string servant_name() const noexcept { return servant_name_; }
         // 从者职阶
-        std::string servant_class() const { return servant_class_; }
+        std::string servant_class() const noexcept { return servant_class_; }
         // 从者性别
-        std::string servant_gender() const { return servant_gender_; }
+        std::string servant_gender() const noexcept { return servant_gender_; }
 
         nlohmann::ordered_json to_json() const
         {
