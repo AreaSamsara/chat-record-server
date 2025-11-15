@@ -6,7 +6,7 @@ namespace AreaSamsara::database
 {
     void UserInfo::insert(soci::session &sql, const UserInfo &user_info)
     {
-        sql << std::format("INSERT INTO {}(user_name,email,phone,password_hash) "
+        sql << std::format("INSERT INTO {}(user_name, email, phone, password_hash) "
                            "VALUES(:user_name, :email, :phone, :password_hash)",
                            table_name),
             soci::use(user_info.user_name_, "user_name"),
@@ -19,7 +19,7 @@ namespace AreaSamsara::database
     {
         // 构建select语句
         std::string select_sql = std::format(
-            "SELECT id,user_name,email,phone,password_hash,created_at,updated_at FROM {}",
+            "SELECT * FROM {}",
             table_name);
 
         // 如果有where条件，添加之

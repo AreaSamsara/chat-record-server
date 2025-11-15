@@ -18,7 +18,7 @@ namespace AreaSamsara::database
     {
         // 构建select语句
         std::string select_str = std::format(
-            "SELECT id, servant_name, servant_class, servant_gender FROM {}",
+            "SELECT * FROM {}",
             table_name);
 
         // 如果有where条件，添加之
@@ -35,7 +35,7 @@ namespace AreaSamsara::database
             ServantInfo servant_info(it->get<std::string>("servant_name"),
                                      it->get<std::string>("servant_class"),
                                      it->get<std::string>("servant_gender"));
-            servant_info.id_ = it->get<uint32_t>("servant_name");
+            servant_info.id_ = it->get<uint32_t>("id");
 
             servants.push_back(std::move(servant_info));
         }
