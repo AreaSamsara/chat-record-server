@@ -40,7 +40,7 @@ namespace AreaSamsara::server
                 json_data["user_infos"] = nlohmann::ordered_json::array();
                 for (const auto &user_info : user_infos)
                 {
-                    json_data["user_infos"].push_back(user_info.to_json());
+                    json_data["user_infos"].emplace_back(user_info.to_json());
                 }
 
                 json_data["error"] = error;
@@ -54,7 +54,7 @@ namespace AreaSamsara::server
 
                 for (const auto &item : json_data["user_infos"])
                 {
-                    response.user_infos.push_back(database::UserInfo::from_json(item));
+                    response.user_infos.emplace_back(database::UserInfo::from_json(item));
                 }
 
                 response.error = json_data.value("error", "");

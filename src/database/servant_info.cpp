@@ -37,7 +37,7 @@ namespace AreaSamsara::database
                                      it->get<std::string>("servant_gender"));
             servant_info.id_ = it->get<uint32_t>("servant_name");
 
-            servants.push_back(servant_info);
+            servants.push_back(std::move(servant_info));
         }
 
         return servants;

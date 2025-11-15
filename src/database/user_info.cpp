@@ -45,7 +45,7 @@ namespace AreaSamsara::database
                                std::chrono::system_clock::from_time_t(std::mktime(&updated_at_tm)));
             user_info.id_ = it->get<uint64_t>("id");
 
-            user_infos.push_back(user_info);
+            user_infos.push_back(std::move(user_info));
         };
         return user_infos;
     }
