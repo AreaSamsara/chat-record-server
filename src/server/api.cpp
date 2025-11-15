@@ -63,7 +63,22 @@ namespace AreaSamsara::server
             }
         };
 
-        Response response;
+        // 错误处理函数
+        auto handle_error = [](httplib::Response &rsp, const std::string &error_msg, const int status_code)
+        {
+            // 打印错误日志
+            spdlog::error(error_msg);
+
+            Response response;
+            response.error = error_msg;
+
+            // 设置响应体
+            rsp.status = status_code;
+            rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
+
+            // 打印响应发送日志
+            spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+        };
 
         // 创建MySQL会话
         auto &database_config = config::Config::global_config().database;
@@ -73,28 +88,20 @@ namespace AreaSamsara::server
                         database_config.user, database_config.pwd, database::UserInfo::db_name));
 
         // 查询角色信息
+        Response response;
         try
         {
             response.user_infos = database::UserInfo::select(sql, "");
         }
         catch (const std::exception &e)
         {
-            std::string error = std::format("error mysql select: {}", e.what());
-            spdlog::error(error);
-
-            response.error = error;
-            rsp.status = http_status::InternalServerError;
-
-            nlohmann::ordered_json response_json = response.to_json();
-            rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
-
-            spdlog::info("GET /UserList -> send response data: {}", rsp.body);
+            std::string error_msg = std::format("error mysql select: {}", e.what());
+            handle_error(rsp, error_msg, http_status::InternalServerError);
             return;
         }
 
-        // 将查找结果进行序列化
-        nlohmann::ordered_json response_data = response.to_json();
-        rsp.set_content(response_data.dump(-1, ' ', false), "application/json");
+        rsp.status = http_status::OK;
+        rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
 
         spdlog::info("GET /UserList -> send response data: {}", rsp.body);
     }
@@ -136,7 +143,23 @@ namespace AreaSamsara::server
             }
         };
 
-        Response response;
+        // 错误处理函数
+        auto handle_error = [](httplib::Response &rsp, const std::string &error_msg, const int status_code)
+        {
+            // 打印错误日志
+            spdlog::error(error_msg);
+
+            Response response;
+            response.message = "";
+            response.error = error_msg;
+
+            // 设置响应体
+            rsp.status = status_code;
+            rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
+
+            // 打印响应发送日志
+            spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+        };
 
         // 解析请求体
         database::UserInfo user_info;
@@ -146,18 +169,8 @@ namespace AreaSamsara::server
         }
         catch (const std::exception &e)
         {
-            std::string error = std::format("error parsing request data: {}", e.what());
-
-            spdlog::error(error);
-
-            response.message = "";
-            response.error = error;
-            rsp.status = http_status::BadRequest;
-
-            nlohmann::ordered_json response_json = response.to_json();
-            rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
-
-            spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+            std::string error_msg = std::format("error parsing request data: {}", e.what());
+            handle_error(rsp, error_msg, http_status::BadRequest);
             return;
         }
 
@@ -174,34 +187,15 @@ namespace AreaSamsara::server
             // 如果已经注册过了，则不允许重复注册
             if (database::UserInfo::exists(sql, std::format("user_name = '{}'", user_info.user_name())))
             {
-                std::string error = std::format("User {} has already signed up!", user_info.user_name());
-                spdlog::error(error);
-
-                response.message = "";
-                response.error = error;
-                rsp.status = http_status::Conflict;
-
-                nlohmann::ordered_json response_json = response.to_json();
-                rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
-
-                spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+                std::string error_msg = std::format("User {} has already signed up!", user_info.user_name());
+                handle_error(rsp, error_msg, http_status::Conflict);
                 return;
             }
         }
         catch (const std::exception &e)
         {
-            std::string error = std::format("error mysql exists: {}", e.what());
-
-            spdlog::error(error);
-
-            response.message = "";
-            response.error = error;
-            rsp.status = http_status::InternalServerError;
-
-            nlohmann::ordered_json response_json = response.to_json();
-            rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
-
-            spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+            std::string error_msg = std::format("error mysql exists: {}", e.what());
+            handle_error(rsp, error_msg, http_status::InternalServerError);
             return;
         }
 
@@ -209,29 +203,21 @@ namespace AreaSamsara::server
         try
         {
             database::UserInfo::insert(sql, user_info);
-
-            response.message = std::format("Succeed to sign up for user {}", user_info.user_name());
-            response.error = "";
         }
         catch (const std::exception &e)
         {
-            std::string error = std::format("error mysql insert: {}", e.what());
-
-            spdlog::error(error);
-
-            response.message = "";
-            response.error = error;
-            rsp.status = http_status::InternalServerError;
-
-            nlohmann::ordered_json response_json = response.to_json();
-            rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
-
-            spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+            std::string error_msg = std::format("error mysql insert: {}", e.what());
+            handle_error(rsp, error_msg, http_status::InternalServerError);
             return;
         }
 
-        nlohmann::ordered_json response_json = response.to_json();
-        rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
+        Response response;
+        response.message = std::format("Succeed to sign up for user {}", user_info.user_name());
+        response.error = "";
+
+        rsp.status = http_status::OK;
+        rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
+
         spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
     }
 
