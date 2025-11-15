@@ -42,12 +42,12 @@ namespace AreaSamsara::database
             // 执行查询操作
             std::vector<ServantInfo> servants = ServantInfo::select(sql, "servant_class like '%er'");
 
-            nlohmann::ordered_json jsondata = nlohmann::ordered_json::array();
+            nlohmann::ordered_json json_data = nlohmann::ordered_json::array();
             for (const auto &servant : servants)
             {
-                jsondata.push_back(servant.to_json());
+                json_data.push_back(servant.to_json());
             }
-            spdlog::info(jsondata.dump(-1, ' ', false));
+            spdlog::info(json_data.dump(-1, ' ', false));
         }
         catch (const std::exception &e)
         {

@@ -71,12 +71,12 @@ namespace AreaSamsara::database
                 {"updated_at", std::format("{:%Y-%m-%d %H:%M:%S}", updated_at_)}};
         }
 
-        static UserInfo from_json(const nlohmann::ordered_json &jsondata)
+        static UserInfo from_json(const nlohmann::ordered_json &json_data)
         {
-            return UserInfo(jsondata.value("user_name", ""),
-                            jsondata.value("email", ""),
-                            jsondata.value("phone", ""),
-                            jsondata.value("password_hash", ""));
+            return UserInfo(json_data.value("user_name", ""),
+                            json_data.value("email", ""),
+                            json_data.value("phone", ""),
+                            json_data.value("password_hash", ""));
         }
     };
 }

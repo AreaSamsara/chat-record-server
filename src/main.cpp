@@ -27,7 +27,7 @@ int main()
     {
         auto &database_config = config::Config::global_config().database;
         // database::test_soci_insert(database_config.user, database_config.pwd, database_config.host);
-        database::test_soci_select(database_config.user, database_config.pwd, database_config.host);
+        // database::test_soci_select(database_config.user, database_config.pwd, database_config.host);
     }
     catch (const std::exception &e)
     {

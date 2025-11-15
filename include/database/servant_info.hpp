@@ -55,11 +55,11 @@ namespace AreaSamsara::database
                     {"servant_gender", servant_gender_}};
         }
 
-        static ServantInfo from_json(const nlohmann::ordered_json &jsondata)
+        static ServantInfo from_json(const nlohmann::ordered_json &json_data)
         {
-            return ServantInfo(jsondata.value("servant_name", ""),
-                               jsondata.value("servant_class", ""),
-                               jsondata.value("servant_gender", ""));
+            return ServantInfo(json_data.value("servant_name", ""),
+                               json_data.value("servant_class", ""),
+                               json_data.value("servant_gender", ""));
         }
     };
 }

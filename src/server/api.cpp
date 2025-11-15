@@ -7,6 +7,8 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include "database/user_info.hpp"
+#include "config/config.hpp"
+#include "server/http_status.hpp"
 
 namespace AreaSamsara::server
 {
@@ -25,20 +27,70 @@ namespace AreaSamsara::server
     {
         spdlog::info("GET /UserList");
 
-        // try
-        // {
-        //     database::UserInfo::select();
-        //     database::UserInfo user_info = database::UserInfo::from_json(nlohmann::ordered_json::parse(req.body));
-        //     nlohmann::ordered_json response_json = user_info.to_json();
-        //     rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
-        // }
-        // catch (const std::exception &e)
-        // {
-        //     spdlog::error("error from_json(): {}", e.what());
-        //     return;
-        // }
+        // 响应结构体
+        struct Response
+        {
+            std::vector<database::UserInfo> user_infos; // 用户信息列表
+            std::string error;                          // 错误
 
-        // spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+            nlohmann::ordered_json to_json() const
+            {
+                nlohmann::ordered_json json_data;
+
+                json_data["user_infos"] = nlohmann::ordered_json::array();
+                for (const auto &user_info : user_infos)
+                {
+                    json_data["user_infos"].push_back(user_info.to_json());
+                }
+
+                json_data["error"] = error;
+
+                return json_data;
+            }
+
+            static Response from_json(const nlohmann::ordered_json &json_data)
+            {
+                Response response;
+
+                for (const auto &item : json_data["user_infos"])
+                {
+                    response.user_infos.push_back(database::UserInfo::from_json(item));
+                }
+
+                response.error = json_data.value("error", "");
+
+                return response;
+            }
+        };
+
+        Response response;
+        // 查询角色信息
+        try
+        {
+            // 创建MySQL会话
+            auto &database_config = config::Config::global_config().database;
+            soci::session sql(soci::mysql,
+                              std::format("host={} user={} password='{}' db={}",
+                                          database_config.host, database_config.user, database_config.pwd,
+                                          database::UserInfo::db_name));
+
+            // 执行查询操作
+            response.user_infos = database::UserInfo::select(sql, "");
+        }
+        catch (const std::exception &e)
+        {
+            std::string error = std::format("error mysql select: {}", e.what());
+
+            spdlog::error(error);
+
+            response.error = error;
+        }
+
+        // 将查找结果进行序列化
+        nlohmann::ordered_json response_data = response.to_json();
+        rsp.set_content(response_data.dump(-1, ' ', false), "application/json");
+
+        spdlog::info("GET /UserList -> send response data: {}", rsp.body);
     }
 
     std::map<std::string, HttpHandler> get_handlers = {
@@ -58,17 +110,58 @@ namespace AreaSamsara::server
     {
         spdlog::info("POST /SignUp -> receive post data: {}", req.body);
 
+        // 响应结构体
+        struct Response
+        {
+            std::string message; // 消息
+            std::string error;   // 错误
+
+            nlohmann::ordered_json to_json() const
+            {
+                return {
+                    {"message", message},
+                    {"error", error}};
+            }
+
+            static Response from_json(const nlohmann::ordered_json &json_data)
+            {
+                return Response(json_data.value("message", ""),
+                                json_data.value("error", ""));
+            }
+        };
+
+        Response response;
         try
         {
+            // 解析请求体
             database::UserInfo user_info = database::UserInfo::from_json(nlohmann::ordered_json::parse(req.body));
-            nlohmann::ordered_json response_json = user_info.to_json();
-            rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
+
+            // 创建MySQL会话
+            auto &database_config = config::Config::global_config().database;
+            soci::session sql(soci::mysql,
+                              std::format("host={} user={} password='{}' db={}",
+                                          database_config.host, database_config.user, database_config.pwd,
+                                          database::UserInfo::db_name));
+
+            // 插入数据
+            database::UserInfo::insert(sql, user_info);
+
+            response.message = std::format("Succeed to sign up for user {}", user_info.user_name());
+            response.error = "";
         }
         catch (const std::exception &e)
         {
-            spdlog::error("error from_json(): {}", e.what());
-            return;
+            std::string error = std::format("error mysql insert: {}", e.what());
+
+            spdlog::error(error);
+
+            response.message = "";
+            response.error = error;
+            rsp.status = http_status::InternalServerError;
         }
+
+        nlohmann::ordered_json response_json = response.to_json();
+        rsp.set_content(response_json.dump(-1, ' ', false), "application/json");
 
         spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
     }
