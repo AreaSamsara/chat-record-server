@@ -1,6 +1,6 @@
 #include "server/server.hpp"
 
-#include <iostream>
+#include <string>
 #include <format>
 
 #include <httplib.h>
@@ -12,7 +12,7 @@
 
 namespace AreaSamsara::server
 {
-    void run_server()
+    void run_server(const std::string &ip_addr, const int port)
     {
         httplib::Server server;
 
@@ -31,9 +31,6 @@ namespace AreaSamsara::server
             HttpHandler handler = it.second;
             server.Post(name, handler);
         }
-
-        const std::string ip_addr = "0.0.0.0";
-        const int port = 8080;
 
         spdlog::info("Server listens at {}:{}", ip_addr, port);
 

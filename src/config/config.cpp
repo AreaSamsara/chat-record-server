@@ -47,8 +47,8 @@ namespace AreaSamsara::config
                 throw std::runtime_error("Missing 'server' section");
             }
             auto server_node = root["server"];
-            server.port = get_required<int>(server_node, "port");
             server.host = get_required<std::string>(server_node, "host");
+            server.port = get_required<int>(server_node, "port");
 
             // 数据库配置
             if (!root["database"])
@@ -67,7 +67,7 @@ namespace AreaSamsara::config
                 throw std::runtime_error("Missing 'database' section");
             }
             auto log_node = root["logger"];
-            logger.file = get_required<std::string>(log_node, "file");
+            logger.file_name = get_required<std::string>(log_node, "file_name");
         }
         catch (const std::exception &e)
         {

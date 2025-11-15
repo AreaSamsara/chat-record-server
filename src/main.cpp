@@ -15,7 +15,7 @@ int main()
 
     try
     {
-        log::init_logger(config::Config::global_config().logger.file);
+        log::init_logger(config::Config::global_config().logger.file_name);
     }
     catch (const std::exception &e)
     {
@@ -25,8 +25,9 @@ int main()
 
     try
     {
-        // database::test_soci_insert();
-        database::test_soci_select();
+        auto &database_config = config::Config::global_config().database;
+        // database::test_soci_insert(database_config.user, database_config.pwd, database_config.host);
+        database::test_soci_select(database_config.user, database_config.pwd, database_config.host);
     }
     catch (const std::exception &e)
     {
@@ -37,7 +38,8 @@ int main()
     // 启动服务器
     try
     {
-        server::run_server();
+        auto &server_config = config::Config::global_config().server;
+        server::run_server(server_config.host, server_config.port);
     }
     catch (const std::exception &e)
     {

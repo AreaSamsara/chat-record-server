@@ -1,7 +1,7 @@
 #include "database/database.hpp"
 
 #include <format>
-#include <iostream>
+#include <string>
 
 #include <soci/soci.h>
 #include <soci/mysql/soci-mysql.h>
@@ -13,14 +13,7 @@
 
 namespace AreaSamsara::database
 {
-    // 用户名
-    const static std::string user = "root";
-    // 密码
-    const static std::string pwd = "A1351989001";
-    // 主机
-    const static std::string host = "localhost";
-
-    void test_soci_insert()
+    void test_soci_insert(const std::string &user, const std::string &pwd, const std::string &host)
     {
         try
         {
@@ -39,7 +32,7 @@ namespace AreaSamsara::database
         }
     }
 
-    void test_soci_select()
+    void test_soci_select(const std::string &user, const std::string &pwd, const std::string &host)
     {
         try
         {

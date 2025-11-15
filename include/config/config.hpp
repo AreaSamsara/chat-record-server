@@ -1,30 +1,27 @@
 #pragma once
 
-#include <iostream>
+#include <string>
 
 namespace AreaSamsara::config
 {
     class Config
     {
     public:
-        // 服务器配置
         struct ServerConfig
         {
-            int port = 0;
-            std::string host;
+            std::string host; // 主机
+            int port = 0;     // 端口
         };
-        // 数据库配置
         struct DatabaseConfig
         {
-            std::string user;
-            std::string pwd;
-            std::string host;
-            int port = 0;
+            std::string user; // 用户
+            std::string pwd;  // 密码
+            std::string host; // 主机
+            int port = 0;     // 端口
         };
-        // 日志配置
         struct LoggerConfig
         {
-            std::string file;
+            std::string file_name; // 日志文件名称
         };
 
     public:
@@ -46,9 +43,9 @@ namespace AreaSamsara::config
         static inline std::string config_file_name = "./bin/config.yaml";
 
     public:
-        ServerConfig server;
-        DatabaseConfig database;
-        LoggerConfig logger;
+        ServerConfig server;     // 服务器配置
+        DatabaseConfig database; // 数据库配置
+        LoggerConfig logger;     // 日志配置
 
     private:
         bool initialized = false;
