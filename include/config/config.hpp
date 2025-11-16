@@ -4,6 +4,7 @@
 
 namespace AreaSamsara::config
 {
+    // 配置信息类
     class Config
     {
     public:
@@ -48,6 +49,6 @@ namespace AreaSamsara::config
         LoggerConfig logger;     // 日志配置
 
     private:
-        bool initialized = false;
+        bool initialized = false; // 是否已初始化
     };
 }
