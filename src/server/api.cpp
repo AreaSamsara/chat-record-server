@@ -13,19 +13,7 @@
 
 namespace AreaSamsara::server
 {
-    // GET Hello
-    void hello_handler(const httplib::Request &req, httplib::Response &rsp)
-    {
-        const std::string handler_name = "GET /Hello";
-
-        auto name = req.get_param_value("name");
-        spdlog::info("{} -> name: {}", handler_name, name);
-
-        std::string response_content = std::format("Hello, {}", name);
-        rsp.set_content(response_content, "text/plain");
-    }
-
-    // GET UserList
+    // GET UserList 获取用户列表
     void user_list_handler(const httplib::Request &req, httplib::Response &rsp)
     {
         const std::string handler_name = "GET /UserList";
@@ -110,7 +98,7 @@ namespace AreaSamsara::server
         spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
     }
 
-    // GET ConversationList
+    // GET ConversationList 获取指定用户聊天会话列表
     void conversation_list_handler(const httplib::Request &req, httplib::Response &rsp)
     {
         const std::string handler_name = "GET /ConversationList";
@@ -199,20 +187,10 @@ namespace AreaSamsara::server
     }
 
     std::map<std::string, HttpHandler> get_handlers = {
-        {"/Hello", hello_handler},
         {"/UserList", user_list_handler},
         {"/ConversationList", conversation_list_handler}};
 
-    // POST Echo
-    void echo_handler(const httplib::Request &req, httplib::Response &rsp)
-    {
-        const std::string handler_name = "POST /Echo";
-        spdlog::info("{} -> receive post data: {}", handler_name, req.body);
-
-        rsp.set_content("{}", "application/json");
-    }
-
-    // POST SignUp
+    // POST SignUp 用户注册
     void sign_up_handler(const httplib::Request &req, httplib::Response &rsp)
     {
         const std::string handler_name = "POST /SignUp";
@@ -317,6 +295,5 @@ namespace AreaSamsara::server
     }
 
     std::map<std::string, HttpHandler> post_handlers = {
-        {"/Echo", echo_handler},
         {"/SignUp", sign_up_handler}};
 }
