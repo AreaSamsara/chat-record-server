@@ -6,7 +6,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include "database/user_info.hpp"
+#include "database/tb_user_info.hpp"
 #include "config/config.hpp"
 #include "server/http_status.hpp"
 
@@ -30,8 +30,8 @@ namespace AreaSamsara::server
         // 响应结构体
         struct Response
         {
-            std::vector<database::UserInfo> user_infos; // 用户信息列表
-            std::string error;                          // 错误
+            std::vector<database::TbUserInfo> user_infos; // 用户信息列表
+            std::string error;                            // 错误
 
             nlohmann::ordered_json to_json() const
             {
@@ -54,7 +54,7 @@ namespace AreaSamsara::server
 
                 for (const auto &item : json_data["user_infos"])
                 {
-                    response.user_infos.emplace_back(database::UserInfo::from_json(item));
+                    response.user_infos.emplace_back(database::TbUserInfo::from_json(item));
                 }
 
                 response.error = json_data.value("error", "");
@@ -85,13 +85,13 @@ namespace AreaSamsara::server
         soci::session sql(
             soci::mysql,
             std::format("host={} user={} password='{}' db={}", database_config.host,
-                        database_config.user, database_config.pwd, database::UserInfo::db_name));
+                        database_config.user, database_config.pwd, database::TbUserInfo::db_name));
 
         // 查询角色信息
         Response response;
         try
         {
-            response.user_infos = database::UserInfo::select(sql, "");
+            response.user_infos = database::TbUserInfo::select(sql, "");
         }
         catch (const std::exception &e)
         {
@@ -162,10 +162,10 @@ namespace AreaSamsara::server
         };
 
         // 解析请求体
-        database::UserInfo user_info;
+        database::TbUserInfo user_info;
         try
         {
-            user_info = database::UserInfo::from_json(nlohmann::ordered_json::parse(req.body));
+            user_info = database::TbUserInfo::from_json(nlohmann::ordered_json::parse(req.body));
         }
         catch (const std::exception &e)
         {
@@ -179,13 +179,13 @@ namespace AreaSamsara::server
         soci::session sql(
             soci::mysql,
             std::format("host={} user={} password='{}' db={}", database_config.host,
-                        database_config.user, database_config.pwd, database::UserInfo::db_name));
+                        database_config.user, database_config.pwd, database::TbUserInfo::db_name));
 
         // 检查用户是否已注册
         try
         {
             // 如果已经注册过了，则不允许重复注册
-            if (database::UserInfo::exists(sql, std::format("user_name = '{}'", user_info.user_name())))
+            if (database::TbUserInfo::exists(sql, std::format("user_name = '{}'", user_info.user_name())))
             {
                 std::string error_msg = std::format("User {} has already signed up!", user_info.user_name());
                 handle_error(rsp, error_msg, http_status::Conflict);
@@ -202,7 +202,7 @@ namespace AreaSamsara::server
         // 插入数据
         try
         {
-            database::UserInfo::insert(sql, user_info);
+            database::TbUserInfo::insert(sql, user_info);
         }
         catch (const std::exception &e)
         {

@@ -75,8 +75,8 @@ target_sources(main PRIVATE
     src/server/api.cpp
     src/log/log.cpp
     src/database/database.cpp
-    src/database/servant_info.cpp
-    src/database/user_info.cpp
+    src/database/tb_servant_info.cpp
+    src/database/tb_user_info.cpp
     src/config/config.cpp
 )
 

@@ -1,10 +1,10 @@
-#include "database/user_info.hpp"
+#include "database/tb_user_info.hpp"
 
 #include <format>
 
 namespace AreaSamsara::database
 {
-    void UserInfo::insert(soci::session &sql, const UserInfo &user_info)
+    void TbUserInfo::insert(soci::session &sql, const TbUserInfo &user_info)
     {
         sql << std::format("INSERT INTO {}(user_name, email, phone, password_hash) "
                            "VALUES(:user_name, :email, :phone, :password_hash)",
@@ -15,7 +15,7 @@ namespace AreaSamsara::database
             soci::use(user_info.password_hash_, "password_hash");
     }
 
-    std::vector<UserInfo> UserInfo::select(soci::session &sql, const std::string &where_condition)
+    std::vector<TbUserInfo> TbUserInfo::select(soci::session &sql, const std::string &where_condition)
     {
         // 构建select语句
         std::string select_sql = std::format(
@@ -29,7 +29,7 @@ namespace AreaSamsara::database
         }
 
         // 提取选中的数据
-        std::vector<UserInfo> user_infos;
+        std::vector<TbUserInfo> user_infos;
         soci::rowset<soci::row> rows = (sql.prepare << select_sql);
         for (auto it = rows.begin(); it != rows.end(); ++it)
         {
@@ -37,12 +37,12 @@ namespace AreaSamsara::database
             std::tm created_at_tm = it->get<std::tm>("created_at");
             std::tm updated_at_tm = it->get<std::tm>("updated_at");
 
-            UserInfo user_info(it->get<std::string>("user_name"),
-                               it->get<std::string>("email"),
-                               it->get<std::string>("phone"),
-                               it->get<std::string>("password_hash"),
-                               std::chrono::system_clock::from_time_t(std::mktime(&created_at_tm)),
-                               std::chrono::system_clock::from_time_t(std::mktime(&updated_at_tm)));
+            TbUserInfo user_info(it->get<std::string>("user_name"),
+                                 it->get<std::string>("email"),
+                                 it->get<std::string>("phone"),
+                                 it->get<std::string>("password_hash"),
+                                 std::chrono::system_clock::from_time_t(std::mktime(&created_at_tm)),
+                                 std::chrono::system_clock::from_time_t(std::mktime(&updated_at_tm)));
             user_info.id_ = it->get<uint64_t>("id");
 
             user_infos.push_back(std::move(user_info));
@@ -50,7 +50,7 @@ namespace AreaSamsara::database
         return user_infos;
     }
 
-    bool UserInfo::exists(soci::session &sql, const std::string &where_condition)
+    bool TbUserInfo::exists(soci::session &sql, const std::string &where_condition)
     {
         // 构建select语句
         std::string exists_sql = std::format(

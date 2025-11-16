@@ -1,10 +1,10 @@
-#include "database/servant_info.hpp"
+#include "database/tb_servant_info.hpp"
 
 #include <format>
 
 namespace AreaSamsara::database
 {
-    void ServantInfo::insert(soci::session &sql, const ServantInfo &servant_info)
+    void TbServantInfo::insert(soci::session &sql, const TbServantInfo &servant_info)
     {
         sql << std::format("INSERT INTO {}(servant_name,servant_class,servant_gender) "
                            "VALUES(:servant_name, :servant_class, :servant_gender)",
@@ -14,7 +14,7 @@ namespace AreaSamsara::database
             soci::use(servant_info.servant_gender_, "servant_gender");
     }
 
-    std::vector<ServantInfo> ServantInfo::select(soci::session &sql, const std::string &where_condition)
+    std::vector<TbServantInfo> TbServantInfo::select(soci::session &sql, const std::string &where_condition)
     {
         // 构建select语句
         std::string select_str = std::format(
@@ -28,13 +28,13 @@ namespace AreaSamsara::database
         }
 
         // 提取选中的数据
-        std::vector<ServantInfo> servants;
+        std::vector<TbServantInfo> servants;
         soci::rowset<soci::row> rows = (sql.prepare << select_str);
         for (auto it = rows.begin(); it != rows.end(); ++it)
         {
-            ServantInfo servant_info(it->get<std::string>("servant_name"),
-                                     it->get<std::string>("servant_class"),
-                                     it->get<std::string>("servant_gender"));
+            TbServantInfo servant_info(it->get<std::string>("servant_name"),
+                                       it->get<std::string>("servant_class"),
+                                       it->get<std::string>("servant_gender"));
             servant_info.id_ = it->get<uint32_t>("id");
 
             servants.push_back(std::move(servant_info));

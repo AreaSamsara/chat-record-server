@@ -10,7 +10,7 @@ CREATE TABLE tb_user_info (
     INDEX (user_name),
     INDEX (email), 
     INDEX (phone)
-) COMMENT='用户表';
+) COMMENT='用户信息数据表';
 
 CREATE TABLE tb_conversation_info (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT '会话ID',
@@ -24,4 +24,4 @@ CREATE TABLE tb_conversation_info (
     INDEX (user_name, last_message_time),
     
     FOREIGN KEY (user_name) REFERENCES tb_user_info(user_name) ON DELETE RESTRICT
-) COMMENT='聊天会话表\n外键约束：要求先清空会话记录才能删除对应用户';
+) COMMENT='聊天会话信息数据表\n外键约束：要求先清空会话记录才能删除对应用户';

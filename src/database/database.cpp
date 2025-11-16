@@ -9,7 +9,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
-#include "database/servant_info.hpp"
+#include "database/tb_servant_info.hpp"
 
 namespace AreaSamsara::database
 {
@@ -18,11 +18,11 @@ namespace AreaSamsara::database
         try
         {
             // 创建MySQL会话
-            soci::session sql(soci::mysql, std::format("host={} user={} password='{}' db={}", host, user, pwd, ServantInfo::db_name));
+            soci::session sql(soci::mysql, std::format("host={} user={} password='{}' db={}", host, user, pwd, TbServantInfo::db_name));
 
             // 执行插入操作
-            ServantInfo servant_info("卫宫士郎", "Archer", "男");
-            ServantInfo::insert(sql, servant_info);
+            TbServantInfo servant_info("卫宫士郎", "Archer", "男");
+            TbServantInfo::insert(sql, servant_info);
 
             spdlog::info("Data inserted successfully");
         }
@@ -37,10 +37,10 @@ namespace AreaSamsara::database
         try
         {
             // 创建MySQL会话
-            soci::session sql(soci::mysql, std::format("host={} user={} password='{}' db={}", host, user, pwd, ServantInfo::db_name));
+            soci::session sql(soci::mysql, std::format("host={} user={} password='{}' db={}", host, user, pwd, TbServantInfo::db_name));
 
             // 执行查询操作
-            std::vector<ServantInfo> servants = ServantInfo::select(sql, "servant_class like '%er'");
+            std::vector<TbServantInfo> servants = TbServantInfo::select(sql, "servant_class like '%er'");
 
             nlohmann::ordered_json json_data = nlohmann::ordered_json::array();
             for (const auto &servant : servants)

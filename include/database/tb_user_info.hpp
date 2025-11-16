@@ -10,14 +10,14 @@
 
 namespace AreaSamsara::database
 {
-    // 用户信息
-    class UserInfo
+    // 用户信息数据表
+    class TbUserInfo
     {
     public:
-        UserInfo() {}
-        UserInfo(const std::string &user_name, const std::string &email, const std::string &phone, const std::string &password_hash,
-                 const std::chrono::system_clock::time_point &created_at = std::chrono::system_clock::now(),
-                 const std::chrono::system_clock::time_point &updated_at = std::chrono::system_clock::now())
+        TbUserInfo() {}
+        TbUserInfo(const std::string &user_name, const std::string &email, const std::string &phone, const std::string &password_hash,
+                   const std::chrono::system_clock::time_point &created_at = std::chrono::system_clock::now(),
+                   const std::chrono::system_clock::time_point &updated_at = std::chrono::system_clock::now())
             : user_name_(user_name), email_(email), phone_(phone), password_hash_(password_hash),
               created_at_(created_at), updated_at_(updated_at)
         {
@@ -25,9 +25,9 @@ namespace AreaSamsara::database
 
     public:
         // 插入一行数据
-        static void insert(soci::session &sql, const UserInfo &user_info);
+        static void insert(soci::session &sql, const TbUserInfo &user_info);
         // 查找数据
-        static std::vector<UserInfo> select(soci::session &sql, const std::string &where_condition = "");
+        static std::vector<TbUserInfo> select(soci::session &sql, const std::string &where_condition = "");
         // 验证数据是否存在
         static bool exists(soci::session &sql, const std::string &where_condition = "");
 
@@ -74,12 +74,12 @@ namespace AreaSamsara::database
                 {"updated_at", std::format("{:%Y-%m-%d %H:%M:%S}", updated_at_)}};
         }
 
-        static UserInfo from_json(const nlohmann::ordered_json &json_data)
+        static TbUserInfo from_json(const nlohmann::ordered_json &json_data)
         {
-            return UserInfo(json_data.value("user_name", ""),
-                            json_data.value("email", ""),
-                            json_data.value("phone", ""),
-                            json_data.value("password_hash", ""));
+            return TbUserInfo(json_data.value("user_name", ""),
+                              json_data.value("email", ""),
+                              json_data.value("phone", ""),
+                              json_data.value("password_hash", ""));
         }
     };
 }

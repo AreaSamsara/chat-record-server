@@ -10,11 +10,11 @@
 namespace AreaSamsara::database
 {
     // 从者信息
-    class ServantInfo
+    class TbServantInfo
     {
     public:
-        ServantInfo(const std::string &servant_name, const std::string &servant_class,
-                    const std::string &servant_gender)
+        TbServantInfo(const std::string &servant_name, const std::string &servant_class,
+                      const std::string &servant_gender)
             : servant_name_(servant_name), servant_class_(servant_class),
               servant_gender_(servant_gender)
         {
@@ -22,9 +22,9 @@ namespace AreaSamsara::database
 
     public:
         // 插入一行数据
-        static void insert(soci::session &sql, const ServantInfo &servant_info);
+        static void insert(soci::session &sql, const TbServantInfo &servant_info);
         // 查找数据
-        static std::vector<ServantInfo> select(soci::session &sql, const std::string &where_condition = "");
+        static std::vector<TbServantInfo> select(soci::session &sql, const std::string &where_condition = "");
 
     public:
         // 数据库名称
@@ -55,11 +55,11 @@ namespace AreaSamsara::database
                     {"servant_gender", servant_gender_}};
         }
 
-        static ServantInfo from_json(const nlohmann::ordered_json &json_data)
+        static TbServantInfo from_json(const nlohmann::ordered_json &json_data)
         {
-            return ServantInfo(json_data.value("servant_name", ""),
-                               json_data.value("servant_class", ""),
-                               json_data.value("servant_gender", ""));
+            return TbServantInfo(json_data.value("servant_name", ""),
+                                 json_data.value("servant_class", ""),
+                                 json_data.value("servant_gender", ""));
         }
     };
 }
