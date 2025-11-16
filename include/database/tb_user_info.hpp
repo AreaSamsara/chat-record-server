@@ -48,7 +48,7 @@ namespace AreaSamsara::database
 
     public:
         // 自增ID
-        uint64_t id() const { return id_; }
+        uint64_t id() const noexcept { return id_; }
         // 用户名称
         std::string user_name() const noexcept { return user_name_; }
         // 邮件地址
