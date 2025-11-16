@@ -77,6 +77,7 @@ target_sources(main PRIVATE
     src/database/database.cpp
     src/database/tb_servant_info.cpp
     src/database/tb_user_info.cpp
+    src/database/tb_conversation_info.cpp
     src/config/config.cpp
 )
 

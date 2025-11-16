@@ -6,12 +6,16 @@ namespace AreaSamsara::database
 {
     void TbConversationInfo::insert(soci::session &sql, const TbConversationInfo &conversation_info)
     {
+        // 将 time_point 转换为 std::tm
+        time_t last_message_time_time_t = std::chrono::system_clock::to_time_t(conversation_info.last_message_time_);
+        std::tm last_message_time_tm = *std::localtime(&last_message_time_time_t);
+
         sql << std::format("INSERT INTO {}(user_name, conversation_name, last_message_time) "
                            "VALUES(:user_name, :conversation_name, :last_message_time)",
                            table_name),
             soci::use(conversation_info.user_name_, "user_name"),
             soci::use(conversation_info.conversation_name_, "conversation_name"),
-            soci::use(conversation_info.last_message_time_, "last_message_time");
+            soci::use(last_message_time_tm, "last_message_time");
     }
 
     std::vector<TbConversationInfo> TbConversationInfo::select(soci::session &sql, const std::string &where_condition)

@@ -7,6 +7,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include "database/tb_user_info.hpp"
+#include "database/tb_conversation_info.hpp"
 #include "config/config.hpp"
 #include "server/http_status.hpp"
 
@@ -15,8 +16,10 @@ namespace AreaSamsara::server
     // GET Hello
     void hello_handler(const httplib::Request &req, httplib::Response &rsp)
     {
+        const std::string handler_name = "GET /Hello";
+
         auto name = req.get_param_value("name");
-        spdlog::info("GET /Hello -> name: {}", name);
+        spdlog::info("{} -> name: {}", handler_name, name);
 
         std::string response_content = std::format("Hello, {}", name);
         rsp.set_content(response_content, "text/plain");
@@ -25,7 +28,8 @@ namespace AreaSamsara::server
     // GET UserList
     void user_list_handler(const httplib::Request &req, httplib::Response &rsp)
     {
-        spdlog::info("GET /UserList");
+        const std::string handler_name = "GET /UserList";
+        spdlog::info(handler_name);
 
         // 响应结构体
         struct Response
@@ -64,7 +68,7 @@ namespace AreaSamsara::server
         };
 
         // 错误处理函数
-        auto handle_error = [](httplib::Response &rsp, const std::string &error_msg, const int status_code)
+        auto handle_error = [handler_name](httplib::Response &rsp, const std::string &error_msg, const int status_code)
         {
             // 打印错误日志
             spdlog::error(error_msg);
@@ -77,7 +81,7 @@ namespace AreaSamsara::server
             rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
 
             // 打印响应发送日志
-            spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+            spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
         };
 
         // 创建MySQL会话
@@ -103,17 +107,107 @@ namespace AreaSamsara::server
         rsp.status = http_status::OK;
         rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
 
-        spdlog::info("GET /UserList -> send response data: {}", rsp.body);
+        spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
+    }
+
+    // GET ConversationList
+    void conversation_list_handler(const httplib::Request &req, httplib::Response &rsp)
+    {
+        const std::string handler_name = "GET /ConversationList";
+        auto user_name = req.get_param_value("user_name");
+        spdlog::info("{} -> user_name: {}", handler_name, user_name);
+
+        // 响应结构体
+        struct Response
+        {
+            std::vector<database::TbConversationInfo> conversation_infos; // 聊天会话信息列表
+            std::string error;                                            // 错误
+
+            nlohmann::ordered_json to_json() const
+            {
+                nlohmann::ordered_json json_data;
+
+                json_data["conversation_infos"] = nlohmann::ordered_json::array();
+                for (const auto &conversation_info : conversation_infos)
+                {
+                    json_data["conversation_infos"].emplace_back(conversation_info.to_json());
+                }
+
+                json_data["error"] = error;
+
+                return json_data;
+            }
+
+            static Response from_json(const nlohmann::ordered_json &json_data)
+            {
+                Response response;
+
+                for (const auto &item : json_data["conversation_infos"])
+                {
+                    response.conversation_infos.emplace_back(database::TbConversationInfo::from_json(item));
+                }
+
+                response.error = json_data.value("error", "");
+
+                return response;
+            }
+        };
+
+        // 错误处理函数
+        auto handle_error = [handler_name](httplib::Response &rsp, const std::string &error_msg, const int status_code)
+        {
+            // 打印错误日志
+            spdlog::error(error_msg);
+
+            Response response;
+            response.error = error_msg;
+
+            // 设置响应体
+            rsp.status = status_code;
+            rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
+
+            // 打印响应发送日志
+            spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
+        };
+
+        // 创建MySQL会话
+        auto &database_config = config::Config::global_config().database;
+        soci::session sql(
+            soci::mysql,
+            std::format("host={} user={} password='{}' db={}", database_config.host,
+                        database_config.user, database_config.pwd, database::TbConversationInfo::db_name));
+
+        // 查询聊天会话信息
+        Response response;
+        try
+        {
+            // 将查找结果按最后一条消息的时间降序排列
+            std::string where_condition = std::format("user_name = '{}' ORDER BY last_message_time DESC", user_name);
+            response.conversation_infos = database::TbConversationInfo::select(sql, where_condition);
+        }
+        catch (const std::exception &e)
+        {
+            std::string error_msg = std::format("error mysql select: {}", e.what());
+            handle_error(rsp, error_msg, http_status::InternalServerError);
+            return;
+        }
+
+        rsp.status = http_status::OK;
+        rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
+
+        spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
     }
 
     std::map<std::string, HttpHandler> get_handlers = {
         {"/Hello", hello_handler},
-        {"/UserList", user_list_handler}};
+        {"/UserList", user_list_handler},
+        {"/ConversationList", conversation_list_handler}};
 
     // POST Echo
     void echo_handler(const httplib::Request &req, httplib::Response &rsp)
     {
-        spdlog::info("POST /Echo -> receive post data: {}", req.body);
+        const std::string handler_name = "POST /Echo";
+        spdlog::info("{} -> receive post data: {}", handler_name, req.body);
 
         rsp.set_content("{}", "application/json");
     }
@@ -121,7 +215,8 @@ namespace AreaSamsara::server
     // POST SignUp
     void sign_up_handler(const httplib::Request &req, httplib::Response &rsp)
     {
-        spdlog::info("POST /SignUp -> receive post data: {}", req.body);
+        const std::string handler_name = "POST /SignUp";
+        spdlog::info("{} -> receive post data: {}", handler_name, req.body);
 
         // 响应结构体
         struct Response
@@ -144,7 +239,7 @@ namespace AreaSamsara::server
         };
 
         // 错误处理函数
-        auto handle_error = [](httplib::Response &rsp, const std::string &error_msg, const int status_code)
+        auto handle_error = [handler_name](httplib::Response &rsp, const std::string &error_msg, const int status_code)
         {
             // 打印错误日志
             spdlog::error(error_msg);
@@ -158,7 +253,7 @@ namespace AreaSamsara::server
             rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
 
             // 打印响应发送日志
-            spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+            spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
         };
 
         // 解析请求体
@@ -218,7 +313,7 @@ namespace AreaSamsara::server
         rsp.status = http_status::OK;
         rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
 
-        spdlog::info("POST /SignUp -> send response data: {}", rsp.body);
+        spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
     }
 
     std::map<std::string, HttpHandler> post_handlers = {
