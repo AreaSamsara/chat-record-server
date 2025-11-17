@@ -39,6 +39,22 @@ namespace AreaSamsara::database
         // 数据表名称
         static inline const std::string table_name = "tb_chat_message_info";
 
+    public:
+        // 消息类型枚举
+        class MessageType
+        {
+        public:
+            static inline const std::string USER = "user";           // 用户消息
+            static inline const std::string ASSISTANT = "assistant"; // AI助手消息
+            static inline const std::string SYSTEM = "system";       // 系统消息
+
+            // 是否为合法的消息类型
+            static bool isValid(const std::string message_type)
+            {
+                return message_type == USER || message_type == ASSISTANT || message_type == SYSTEM;
+            }
+        };
+
     private:
         uint64_t id_ = 0;                                  // 自增ID
         uint64_t conversation_id_ = 0;                     // 会话ID
