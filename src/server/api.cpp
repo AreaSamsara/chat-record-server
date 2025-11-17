@@ -6,9 +6,9 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
+#include "database/database.hpp"
 #include "database/tb_user_info.hpp"
 #include "database/tb_conversation_info.hpp"
-#include "config/config.hpp"
 #include "server/http_status.hpp"
 
 namespace AreaSamsara::server
@@ -73,11 +73,7 @@ namespace AreaSamsara::server
         };
 
         // 创建MySQL会话
-        auto &database_config = config::Config::global_config().database;
-        soci::session sql(
-            soci::mysql,
-            std::format("host={} user={} password='{}' db={}", database_config.host,
-                        database_config.user, database_config.pwd, database::TbUserInfo::db_name));
+        soci::session sql = database::new_sql_session(database::TbUserInfo::db_name);
 
         // 查询角色信息
         Response response;
@@ -159,11 +155,7 @@ namespace AreaSamsara::server
         };
 
         // 创建MySQL会话
-        auto &database_config = config::Config::global_config().database;
-        soci::session sql(
-            soci::mysql,
-            std::format("host={} user={} password='{}' db={}", database_config.host,
-                        database_config.user, database_config.pwd, database::TbConversationInfo::db_name));
+        soci::session sql = database::new_sql_session(database::TbConversationInfo::db_name);
 
         // 查询聊天会话信息
         Response response;
@@ -248,11 +240,7 @@ namespace AreaSamsara::server
         }
 
         // 创建MySQL会话
-        auto &database_config = config::Config::global_config().database;
-        soci::session sql(
-            soci::mysql,
-            std::format("host={} user={} password='{}' db={}", database_config.host,
-                        database_config.user, database_config.pwd, database::TbUserInfo::db_name));
+        soci::session sql = database::new_sql_session(database::TbUserInfo::db_name);
 
         // 如果用户已经注册，则不允许重复注册
         try
@@ -351,11 +339,7 @@ namespace AreaSamsara::server
         }
 
         // 创建MySQL会话
-        auto &database_config = config::Config::global_config().database;
-        soci::session sql(
-            soci::mysql,
-            std::format("host={} user={} password='{}' db={}", database_config.host,
-                        database_config.user, database_config.pwd, database::TbConversationInfo::db_name));
+        soci::session sql = database::new_sql_session(database::TbConversationInfo::db_name);
 
         // 如果用户尚未注册，禁止创建聊天会话
         try

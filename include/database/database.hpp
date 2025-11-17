@@ -2,8 +2,11 @@
 
 #include <string>
 
+#include <soci/soci.h>
+#include <soci/mysql/soci-mysql.h>
+
 namespace AreaSamsara::database
 {
-    void test_soci_insert(const std::string &user, const std::string &pwd, const std::string &host);
-    void test_soci_select(const std::string &user, const std::string &pwd, const std::string &host);
+    // 创建MySQL会话
+    soci::session new_sql_session(const std::string db_name);
 }
