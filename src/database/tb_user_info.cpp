@@ -33,16 +33,12 @@ namespace AreaSamsara::database
         soci::rowset<soci::row> rows = (sql.prepare << select_sql);
         for (auto it = rows.begin(); it != rows.end(); ++it)
         {
-            // 使用std::tm接收数据库时间
-            std::tm created_at_tm = it->get<std::tm>("created_at");
-            std::tm updated_at_tm = it->get<std::tm>("updated_at");
-
             TbUserInfo user_info(it->get<std::string>("user_name"),
                                  it->get<std::string>("email"),
                                  it->get<std::string>("phone"),
                                  it->get<std::string>("password_hash"),
-                                 std::chrono::system_clock::from_time_t(std::mktime(&created_at_tm)),
-                                 std::chrono::system_clock::from_time_t(std::mktime(&updated_at_tm)));
+                                 util::tm_to_time_point(it->get<std::tm>("created_at")),
+                                 util::tm_to_time_point(it->get<std::tm>("updated_at")));
             user_info.id_ = it->get<uint64_t>("id");
 
             user_infos.push_back(std::move(user_info));

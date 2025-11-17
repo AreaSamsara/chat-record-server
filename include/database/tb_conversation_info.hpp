@@ -8,6 +8,8 @@
 #include <soci/mysql/soci-mysql.h>
 #include <nlohmann/json.hpp>
 
+#include "util/timee.hpp"
+
 namespace AreaSamsara::database
 {
     // 聊天会话信息数据表
@@ -16,10 +18,11 @@ namespace AreaSamsara::database
     public:
         TbConversationInfo() {}
         TbConversationInfo(const std::string &user_name, const std::string &conversation_name,
+                           const std::chrono::system_clock::time_point &last_message_time = std::chrono::system_clock::now(),
                            const std::chrono::system_clock::time_point &created_at = std::chrono::system_clock::now(),
                            const std::chrono::system_clock::time_point &updated_at = std::chrono::system_clock::now())
             : user_name_(user_name), conversation_name_(conversation_name),
-              created_at_(created_at), updated_at_(updated_at)
+              last_message_time_(last_message_time), created_at_(created_at), updated_at_(updated_at)
         {
         }
 
@@ -65,15 +68,31 @@ namespace AreaSamsara::database
                 {"id", id_},
                 {"user_name", user_name_},
                 {"conversation_name", conversation_name_},
-                {"last_message_time", std::format("{:%Y-%m-%d %H:%M:%S}", last_message_time_)},
-                {"created_at", std::format("{:%Y-%m-%d %H:%M:%S}", created_at_)},
-                {"updated_at", std::format("{:%Y-%m-%d %H:%M:%S}", updated_at_)}};
+                {"last_message_time", util::time_point_to_string(last_message_time_)},
+                {"created_at", util::time_point_to_string(created_at_)},
+                {"updated_at", util::time_point_to_string(updated_at_)}};
         }
 
         static TbConversationInfo from_json(const nlohmann::ordered_json &json_data)
         {
+            std::chrono::system_clock::time_point last_message_time = std::chrono::system_clock::now();
+
+            // 将时间字符串解析为时间点变量
+            if (!json_data.value("last_message_time", "").empty())
+            {
+                try
+                {
+                    last_message_time = util::string_to_time_point(json_data.value("last_message_time", ""));
+                }
+                catch (const std::exception &e)
+                {
+                    throw std::runtime_error(std::format("error util::string_to_time_point(): {}", e.what()));
+                }
+            }
+
             return TbConversationInfo(json_data.value("user_name", ""),
-                                      json_data.value("conversation_name", ""));
+                                      json_data.value("conversation_name", ""),
+                                      last_message_time);
         }
     };
 }

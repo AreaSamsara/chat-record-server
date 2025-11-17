@@ -74,11 +74,15 @@ target_sources(main PRIVATE
     src/server/server.cpp
     src/server/api.cpp
     src/log/log.cpp
+
     src/database/database.cpp
     src/database/tb_servant_info.cpp
     src/database/tb_user_info.cpp
     src/database/tb_conversation_info.cpp
+
     src/config/config.cpp
+
+    src/util/time.cpp
 )
 
 # 指定编译器在搜索头文件时，应包含项目中的include目录

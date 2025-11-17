@@ -8,6 +8,8 @@
 #include <soci/mysql/soci-mysql.h>
 #include <nlohmann/json.hpp>
 
+#include "util/timee.hpp"
+
 namespace AreaSamsara::database
 {
     // 用户信息数据表
@@ -70,8 +72,8 @@ namespace AreaSamsara::database
                 {"email", email_},
                 {"phone", phone_},
                 {"password_hash", password_hash_},
-                {"created_at", std::format("{:%Y-%m-%d %H:%M:%S}", created_at_)},
-                {"updated_at", std::format("{:%Y-%m-%d %H:%M:%S}", updated_at_)}};
+                {"created_at", util::time_point_to_string(created_at_)},
+                {"updated_at", util::time_point_to_string(updated_at_)}};
         }
 
         static TbUserInfo from_json(const nlohmann::ordered_json &json_data)

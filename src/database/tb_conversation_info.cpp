@@ -6,9 +6,7 @@ namespace AreaSamsara::database
 {
     void TbConversationInfo::insert(soci::session &sql, const TbConversationInfo &conversation_info)
     {
-        // 将 time_point 转换为 std::tm
-        time_t last_message_time_time_t = std::chrono::system_clock::to_time_t(conversation_info.last_message_time_);
-        std::tm last_message_time_tm = *std::localtime(&last_message_time_time_t);
+        std::tm last_message_time_tm = util::time_point_to_tm(conversation_info.last_message_time_);
 
         sql << std::format("INSERT INTO {}(user_name, conversation_name, last_message_time) "
                            "VALUES(:user_name, :conversation_name, :last_message_time)",
@@ -36,18 +34,13 @@ namespace AreaSamsara::database
         soci::rowset<soci::row> rows = (sql.prepare << select_sql);
         for (auto it = rows.begin(); it != rows.end(); ++it)
         {
-            // 使用std::tm接收数据库时间
-            std::tm created_at_tm = it->get<std::tm>("created_at");
-            std::tm updated_at_tm = it->get<std::tm>("updated_at");
-            std::tm last_message_time_tm = it->get<std::tm>("last_message_time");
-
             TbConversationInfo conversation_info(it->get<std::string>("user_name"),
                                                  it->get<std::string>("conversation_name"),
-                                                 std::chrono::system_clock::from_time_t(std::mktime(&created_at_tm)),
-                                                 std::chrono::system_clock::from_time_t(std::mktime(&updated_at_tm)));
+                                                 util::tm_to_time_point(it->get<std::tm>("created_at")),
+                                                 util::tm_to_time_point(it->get<std::tm>("updated_at")));
 
             conversation_info.id_ = it->get<uint64_t>("id");
-            conversation_info.last_message_time_ = std::chrono::system_clock::from_time_t(std::mktime(&last_message_time_tm));
+            conversation_info.last_message_time_ = util::tm_to_time_point(it->get<std::tm>("last_message_time"));
 
             conversation_infos.push_back(std::move(conversation_info));
         };

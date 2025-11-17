@@ -294,6 +294,94 @@ namespace AreaSamsara::server
         spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
     }
 
+    // POST NewConversation 新建聊天会话
+    void new_conversation_handler(const httplib::Request &req, httplib::Response &rsp)
+    {
+        const std::string handler_name = "POST /NewConversation";
+        spdlog::info("{} -> receive post data: {}", handler_name, req.body);
+
+        // 响应结构体
+        struct Response
+        {
+            std::string message; // 消息
+            std::string error;   // 错误
+
+            nlohmann::ordered_json to_json() const
+            {
+                return {
+                    {"message", message},
+                    {"error", error}};
+            }
+
+            static Response from_json(const nlohmann::ordered_json &json_data)
+            {
+                return Response(json_data.value("message", ""),
+                                json_data.value("error", ""));
+            }
+        };
+
+        // 错误处理函数
+        auto handle_error = [handler_name](httplib::Response &rsp, const std::string &error_msg, const int status_code)
+        {
+            // 打印错误日志
+            spdlog::error(error_msg);
+
+            Response response;
+            response.message = "";
+            response.error = error_msg;
+
+            // 设置响应体
+            rsp.status = status_code;
+            rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
+
+            // 打印响应发送日志
+            spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
+        };
+
+        // 解析请求体
+        database::TbConversationInfo conversation_info;
+        try
+        {
+            conversation_info = database::TbConversationInfo::from_json(nlohmann::ordered_json::parse(req.body));
+        }
+        catch (const std::exception &e)
+        {
+            std::string error_msg = std::format("error parsing request data: {}", e.what());
+            handle_error(rsp, error_msg, http_status::BadRequest);
+            return;
+        }
+
+        // 创建MySQL会话
+        auto &database_config = config::Config::global_config().database;
+        soci::session sql(
+            soci::mysql,
+            std::format("host={} user={} password='{}' db={}", database_config.host,
+                        database_config.user, database_config.pwd, database::TbConversationInfo::db_name));
+
+        // 插入数据
+        try
+        {
+            database::TbConversationInfo::insert(sql, conversation_info);
+        }
+        catch (const std::exception &e)
+        {
+            std::string error_msg = std::format("error mysql insert: {}", e.what());
+            handle_error(rsp, error_msg, http_status::InternalServerError);
+            return;
+        }
+
+        Response response;
+        response.message = std::format("Succeed to create new conversation {} for user {}",
+                                       conversation_info.conversation_name(), conversation_info.user_name());
+        response.error = "";
+
+        rsp.status = http_status::OK;
+        rsp.set_content(response.to_json().dump(-1, ' ', false), "application/json");
+
+        spdlog::info("{} -> send response data: {}", handler_name, rsp.body);
+    }
+
     std::map<std::string, HttpHandler> post_handlers = {
-        {"/SignUp", sign_up_handler}};
+        {"/SignUp", sign_up_handler},
+        {"/NewConversation", new_conversation_handler}};
 }
