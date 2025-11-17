@@ -254,10 +254,9 @@ namespace AreaSamsara::server
             std::format("host={} user={} password='{}' db={}", database_config.host,
                         database_config.user, database_config.pwd, database::TbUserInfo::db_name));
 
-        // 检查用户是否已注册
+        // 如果用户已经注册，则不允许重复注册
         try
         {
-            // 如果已经注册过了，则不允许重复注册
             if (database::TbUserInfo::exists(sql, std::format("user_name = '{}'", user_info.user_name())))
             {
                 std::string error_msg = std::format("User {} has already signed up!", user_info.user_name());
@@ -357,6 +356,23 @@ namespace AreaSamsara::server
             soci::mysql,
             std::format("host={} user={} password='{}' db={}", database_config.host,
                         database_config.user, database_config.pwd, database::TbConversationInfo::db_name));
+
+        // 如果用户尚未注册，禁止创建聊天会话
+        try
+        {
+            if (!database::TbUserInfo::exists(sql, std::format("user_name = '{}'", conversation_info.user_name())))
+            {
+                std::string error_msg = std::format("User {} hasn't signed up yet!", conversation_info.user_name());
+                handle_error(rsp, error_msg, http_status::UnprocessableEntity);
+                return;
+            }
+        }
+        catch (const std::exception &e)
+        {
+            std::string error_msg = std::format("error mysql exists: {}", e.what());
+            handle_error(rsp, error_msg, http_status::InternalServerError);
+            return;
+        }
 
         // 插入数据
         try

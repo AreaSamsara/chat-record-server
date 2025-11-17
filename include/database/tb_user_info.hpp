@@ -8,7 +8,7 @@
 #include <soci/mysql/soci-mysql.h>
 #include <nlohmann/json.hpp>
 
-#include "util/timee.hpp"
+#include "util/time.hpp"
 
 namespace AreaSamsara::database
 {
